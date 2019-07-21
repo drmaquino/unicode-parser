@@ -1,0 +1,21 @@
+{
+  "name": "unicode-parser",
+  "version": "1.0.0",
+  "description": "traduce claves a unicode para facilitar documentacion de algoritmos/matematica",
+  "main": "unicode_parser.js",
+  "scripts": {
+    "start": "node unicode_parser.js -p",
+    "help": "node unicode_parser.js -d"
+  },
+  "keywords": [
+    "math",
+    "logic",
+    "pseudocode",
+    "algorithms"
+  ],
+  "author": "drmaquino",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^5.16.0"
+  }
+}
