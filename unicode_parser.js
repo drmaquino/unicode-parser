@@ -35,25 +35,29 @@ const dict = {
     beta: '\u03B2'
 }
 
-async function processFolder(basePath, targetFolder) {
-    const originFolder = basePath + '/' + targetFolder
-    const destinationFolder = basePath + '/' + 'transpiled'
-
-    const allFilenames = fs.readdirSync(originFolder)
-    const filenames = filterHiddenAndDirectories(allFilenames)
-    
+async function processFolder(originFolder) {
+    const destinationFolder = originFolder + '/../transpiled'
     try {
-        fs.mkdirSync(destinationFolder)
+        const allFilenames = fs.readdirSync(originFolder)
+        const filenames = filterHiddenAndDirectories(allFilenames)
+        try {
+            fs.mkdirSync(destinationFolder)
+        } catch (err) {
+            // folder exists, no need to create it
+        }
+        for (const name of filenames) {
+            try {
+                processFile(originFolder + '/' + name, destinationFolder + '/' + name)
+            } catch (err2) {
+                console.log("error al procesar el archivo: " + name)
+            }
+        }
     } catch (err) {
-        // folder exists, no need to create it
-    }
-
-    for (const name of filenames) {
-        processFile(originFolder + '/' + name, destinationFolder + '/' + name)
+        console.log("no existe la ruta especificada")
     }
 }
 
-function filterHiddenAndDirectories(filenames){
+function filterHiddenAndDirectories(filenames) {
     // this attempts (poorly) to avoid processing folders and hidden files
     return filenames.filter(e => e.includes('.') && !e.startsWith('.'))
 }
@@ -65,7 +69,6 @@ async function processFile(origin, destination) {
 
 async function processText(origin) {
     let text = ''
-
     const fileStream = fs.createReadStream(origin)
 
     const rl = readline.createInterface({
@@ -79,9 +82,9 @@ async function processText(origin) {
                 const translated = translateLine(line)
                 text += translated
                 text += '\n'
-            }catch (err) {
+            } catch (err) {
                 let markedError = ''
-                markedError += '>>>ERROR: ' + err +'\n'
+                markedError += '>>>> ERROR: ' + err + '\n'
                 markedError += line
                 markedError += '\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n'
                 text += markedError
@@ -100,10 +103,8 @@ function isValidLine(line) {
             } else {
                 opened = true
             }
-        } else if (c == '.') {
-            if (opened) {
-                opened = false
-            }
+        } else if (c == '.' && opened) {
+            opened = false
         }
     }
     return !opened
@@ -122,7 +123,7 @@ function translateLine(line) {
                     i++
                 }
                 const command = line.slice(desde + 1, i)
-                if (dict[command]){
+                if (dict[command]) {
                     const replacement = dict[command]
                     result += replacement
                 } else {
@@ -155,7 +156,7 @@ async function main() {
         mostrarDiccionario()
     } else if (process.argv[2] === '-p') {
         if (process.argv[3]) {
-            await processFolder(__dirname, process.argv[3])
+            await processFolder(process.argv[3])
             console.log("traduccion finalizada.")
         } else {
             console.log("por favor, especifique la carpeta con los archivos a traducir.")
