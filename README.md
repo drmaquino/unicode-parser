@@ -25,6 +25,8 @@ Para usar este script, debemos ejecutarlo desde una terminal, por lo cual es nec
 
 ```user@pc:~$ node unicode-parser.js -p /ruta/a/la/carpeta```
 
+Los archivos traducidos se guardarán en otro directorio en la misma ruta donde se encuenta la carpeta original. Este directorio será creado la primera vez, si es necesario.
+
 ***Importante:** si se deseara convertir un único archivo, se deberá colocar ese archivo en una carpeta aparte y pasar al programa la ruta de la misma, ya que por el momento el programa sólo recibe rutas de carpetas.*
 
 ## Confección de los documentos
