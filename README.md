@@ -12,7 +12,7 @@ Solo es necesario contar con NodeJS instalado para poder ejecutar el script.
 
 Para usar este script, debemos ejecutarlo desde una terminal, por lo cual es necesario abrir una terminal y posicionarse en el directorio en donde se encuenta el parser.
 
-### Ver opciones de uso
+### Ver opciones de ejecución
 
 ```user@pc:~$ node unicode-parser.js```
 
@@ -26,6 +26,54 @@ Para usar este script, debemos ejecutarlo desde una terminal, por lo cual es nec
 ```user@pc:~$ node unicode-parser.js -p /ruta/a/la/carpeta```
 
 ***Importante:** si se deseara convertir un único archivo, se deberá colocar ese archivo en una carpeta aparte y pasar al programa la ruta de la misma, ya que por el momento el programa sólo recibe rutas de carpetas.*
+
+## Confección de los documentos
+El script permite insertar símbolos unicode escribiendo su alias en el texto. Para indicar que estamos escribiendo un alias, y no simplemente texto, se deberá anteponer un '$' (signo peso) y terminar con un '.' (punto). Si alguna de las líneas llegara a contener algun error de formato, o el alias introducido no está dentro del diccionario, se mostrará un error en la línea en cuestion. Aquí algunos ejemplos:
+
+### Archivo original
+```
+aConj: Secu(Secu(Evento)) $->. Conj(Secu(Evento))
+aConj(<>) $===. $emptyset.
+aConj(e$bullet.s) $===. Ag(e, aConj(s))
+
+$bullet. función nuevoJuego(in h: Habitacion, in js: Conj(Jugador), in f: Fantasma) $->. juego: Juego
+Pre $===. { $not.vacio?(js) $and. Rep(h) $and.L
+        $pi.$_1.(prim(f)) $in. libres(h) }
+Post $===. { habitacion(juego) $=obs. h $and.
+        fantasmas(juego) $=obs. agregar(f, $emptyset.) $and.
+		jugadores(juego) $=obs. js $and.
+        ($forall.jug: Jugador)(jug $in. js $=>.L acciones(jug, juego) $=obs. <>) }
+
+$bullet. función verJugadoresVivos(in juego: Juego) $-> js: Lista(Tupla(Jugador, Pos, Dir))
+  Pre $===. { true }
+  Post $===. { ( $forall.j: Jugador)(j $in. jugadores(juego) $=>.L
+            (j $in. claves(js) $<==>. jugadorVivo(j, juego))) }
+```
+
+### Archivo traducido
+```
+aConj: Secu(Secu(Evento)) ⟶ Conj(Secu(Evento))
+aConj(<>) ≡ ∅
+aConj(e•s) ≡ Ag(e, aConj(s))
+
+• función nuevoJuego(in h: Habitacion, in js: Conj(Jugador), in f: Fantasma) ⟶ juego: Juego
+Pre ≡ { ¬vacio?(js) ∧ Rep(h) ∧L
+        π₁(prim(f)) ∊ libres(h) }
+Post ≡ { habitacion(juego) =ᵒᵇˢ h ∧
+        fantasmas(juego) =ᵒᵇˢ agregar(f, ∅) ∧
+		jugadores(juego) =ᵒᵇˢ js ∧
+        (∀jug: Jugador)(jug ∊ js ⇒L acciones(jug, juego) =ᵒᵇˢ <>) }
+
+>>>> ERROR: los marcadores de apertura/cierre no coinciden
+$bullet.función verJugadoresVivos(in juego: Juego) $-> js: Lista(Tupla(Jugador, Pos, Dir))
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+Pre ≡ { true }
+Post ≡ { ( ∀j: Jugador)(j ∊ jugadores(juego) ⇒L
+>>>> ERROR: '<==>' no es un comando valido
+            (j $in. claves(js) $<==>. jugadorVivo(j, juego))) }
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+```
 
 ## Extensión del programa
 En el caso de que los símbolos que necesites no se encuentren en la tabla, es posible agregarlos editando directamente el código fuente, añadiendo el par "*clave*": "*valor*" al diccionario.
